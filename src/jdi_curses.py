@@ -5,15 +5,23 @@ from curses.textpad import rectangle
 from jdi_master import jdi_master
 
 def taskPanel(h, w, x0, x1, y0, y1, panel, master, sth):
+    padw = x1-x0-2
+    namepad = curses.newpad(len(master.getPanelData()[panel][master.IND_NAME])+1, padw+1)
 
-        namepad = curses.newpad(len(master.getPanelData()[panel][master.IND_NAME])+1, master.getMaxLen(panel, master.IND_NAME)+1)
+    i = 0
+    for name in master.getPanelData()[panel][master.IND_NAME]:
+        namepad.addstr(i, 0, name[:padw])
 
-        i = 0
-        for name in master.getPanelData()[panel][master.IND_NAME]:
-            namepad.addstr(i, 0, name)
-            i += 1
+        spaceleft = padw-len(name)
+        date = master.getPanelData()[panel][master.IND_DATE][i]
+            
+        if spaceleft >= len(date)+1:
+            namepad.addstr(i, padw-len(date), date)
+            bob = 1
 
-        namepad.refresh(0, 0, y0+1, x0+1, y1-1, x1-2) 
+        i += 1
+
+    namepad.refresh(0, 0, y0+1, x0+1, y1-1, x1-2) 
 
 def main(sth):
     master = jdi_master()
