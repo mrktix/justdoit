@@ -79,6 +79,7 @@ def main(sth):
         rectangle(sth, p1y, p2x, p2y-1, p3x-1)
         sth.refresh()
 
+        print(binds['left'])
         taskPanel(h, w, p0x, p1x, p0y, p2y-1, 0, master, sth)
         taskPanel(h, w, p1x, p2x, p0y, p2y-1, 1, master, sth)
         descPanel(h, w, p2x, p3x, p0y, p1y-1, 0, master, sth)
@@ -87,19 +88,16 @@ def main(sth):
         
         key = sth.getkey()
 
-
         match key:
-            case binds['left']:
+            case str(binds.get('left')):
                 bob = 1
-            case binds['up']:
+            case str(binds.get('up')):
                 bob = 1
-            case binds['down']:
+            case str(binds.get('down')):
                 bob = 1
-            case binds['right']:
+            case str(binds.get('right')):
                 bob = 1
-            case binds['quit']:
-                break
-        
-
+            case str(binds.get('quit')):
+                bob = 1
 
 wrapper(main)
