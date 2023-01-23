@@ -1,16 +1,17 @@
 import subprocess
 from jdi_task import jdi_task
+from pathlib import Path
 
 class jdi_parser:
 
     def __init__(s):
-        pass
+        s.parser = Path(__file__).parent / 'wikiparser.sh'
 
-    def parse(s, parser, path):
-        name = str(subprocess.run([parser, 'name', path], capture_output=True).stdout, 'utf-8').split('\n')[:-1]
-        date = str(subprocess.run([parser, 'date', path], capture_output=True).stdout, 'utf-8').split('\n')[:-1]
-        desc = str(subprocess.run([parser, 'desc', path], capture_output=True).stdout, 'utf-8').split('\n')[:-1]
-        status = str(subprocess.run([parser, 'status', path], capture_output=True).stdout, 'utf-8').split('\n')[:-1]
+    def parse(s, path):
+        name = str(subprocess.run([s.parser, 'name', path], capture_output=True).stdout, 'utf-8').split('\n')[:-1]
+        date = str(subprocess.run([s.parser, 'date', path], capture_output=True).stdout, 'utf-8').split('\n')[:-1]
+        desc = str(subprocess.run([s.parser, 'desc', path], capture_output=True).stdout, 'utf-8').split('\n')[:-1]
+        status = str(subprocess.run([s.parser, 'status', path], capture_output=True).stdout, 'utf-8').split('\n')[:-1]
 
         numtasks = max(len(name), len(date), len(desc), len(status))
         name += ["" for i in range(numtasks-len(name))]
@@ -28,7 +29,3 @@ class jdi_parser:
             tasks[i].file = path
 
         return tasks
-
-
-parser = jdi_parser()
-parser.parse('/home/arleok/repos/justdoit/src/wikiparser.sh', '/home/arleok/repos/justdoit/test/.wiki')

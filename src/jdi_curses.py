@@ -8,12 +8,12 @@ from jdi_config import jdi_config
 
 def taskPanel(h, w, x0, x1, y0, y1, panel, master, sth):
     padw = x1-x0-2
-    pad = curses.newpad(len(master.getPanelData()[panel])+1, padw+1)
+    pad = curses.newpad(len(master.paneldata[panel])+1, padw+1)
 
     i = 0
-    for task in master.getPanelData()[panel]:
+    for task in master.paneldata[panel]:
         attr = curses.A_NORMAL
-        if master.getCursor(panel) == i:
+        if master.cursor == i and panel == 0:
             attr = curses.A_REVERSE
 
         pad.addstr(i, 0, " "*padw, attr)
@@ -29,7 +29,7 @@ def descPanel(h, w, x0, x1, y0, y1, panel, master, sth):
     padw = x1-x0-2
     padh = y1-y0-2
 
-    task = master.getPanelData()[panel][master.getCursor(panel)]
+    task = master.tasks[panel]
 
     pad = curses.newpad(padh+1, padw+1)
     pad.addstr(0, 0, task.name[:padw])
@@ -60,12 +60,11 @@ def main(sth):
     #in initpair, -1 will give default (in this case transparent bg)
     master = jdi_master()
     fig = jdi_config()
-    fig.load()
-    print(fig.binds)
+    binds = fig.load()
 
     while True:
         h, w = sth.getmaxyx()
-        pw = (w-2)/(master.getNumPanels()+1)
+        pw = (w-2)/(master.NUM_PANELS+1)
         p0x, p1x, p2x, p3x = int(0*pw)+1, int(1*pw)+1, int(2*pw)+1, int(3*pw)+1
 
         ph = (h-1)/(2)
@@ -80,24 +79,26 @@ def main(sth):
         rectangle(sth, p1y, p2x, p2y-1, p3x-1)
         sth.refresh()
 
-        taskPanel(h, w, p0x, p1x, p0y, p2y-1, 1, master, sth)
-        taskPanel(h, w, p1x, p2x, p0y, p2y-1, 0, master, sth)
-        descPanel(h, w, p2x, p3x, p0y, p1y-1, 1, master, sth)
-        descPanel(h, w, p2x, p3x, p1y, p2y-1, 0, master, sth)
+        taskPanel(h, w, p0x, p1x, p0y, p2y-1, 0, master, sth)
+        taskPanel(h, w, p1x, p2x, p0y, p2y-1, 1, master, sth)
+        descPanel(h, w, p2x, p3x, p0y, p1y-1, 0, master, sth)
+        descPanel(h, w, p2x, p3x, p1y, p2y-1, 1, master, sth)
 
         
         key = sth.getkey()
-        #match key:
-            #case fig.binds["left"]:
-                #pass
-            #case fig.binds['up']:
-                #pass
-            #case fig.binds['down']:
-                #pass
-            #case fig.binds['right']:
-                #pass
-            #case fig.binds['quit']:
-                #break
+
+
+        match key:
+            case binds['left']:
+                bob = 1
+            case binds['up']:
+                bob = 1
+            case binds['down']:
+                bob = 1
+            case binds['right']:
+                bob = 1
+            case binds['quit']:
+                break
         
 
 

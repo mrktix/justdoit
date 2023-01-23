@@ -7,15 +7,13 @@ from jdi_parser import jdi_parser
 class jdi_fs:
 
     def __init__(s, path):
-        s.path = path
-        s.parsersh = Path(__file__).parent / 'wikiparser.sh'
         s.parser = jdi_parser()
+    
+    def taskfromwiki(s, wiki):
+        return s.parser.parse(wiki)
 
-    def cotasks(s):
-        return s.sorttasks(s.tasksindir(s.path.parent))
-
-    def subtasks(s):
-        return s.sorttasks(s.tasksindir(s.path))
+    def subtasks(s, path):
+        return s.sorttasks(s.tasksindir(path))
 
     def tasksindir(s, directory):
         tasks = []
@@ -23,7 +21,7 @@ class jdi_fs:
             if os.path.isfile(taskdir):
                 continue
             wiki = taskdir / '.wiki'
-            tasks += s.parser.parse(str(s.parsersh), str(wiki))
+            tasks += s.taskfromwiki(str(wiki))
         return tasks
 
     def indexOfParent(s, cotasks, subtasks):

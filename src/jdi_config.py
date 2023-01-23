@@ -12,5 +12,6 @@ class jdi_config:
         for line in config:
             args = line.split(' ')
             s.binds[args[0]] = args[1]
+        return binds
 
         
