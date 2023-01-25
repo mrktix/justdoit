@@ -24,20 +24,13 @@ def taskPanel(h, w, x0, x1, y0, y1, panel, master, sth):
         i += 1
 
     pad.refresh(0, 0, y0+1, x0+1, y1-1, x1-2) 
+    #sth.addstr(y0, x0+1, master.tasks[panel].name[:padw])
 
 def descPanel(h, w, x0, x1, y0, y1, panel, master, sth):
     padw = x1-x0-2
     padh = y1-y0-2
 
     task = master.tasks[panel]
-
-    pad = curses.newpad(padh+1, padw+1)
-    pad.addstr(0, 0, task.name[:padw])
-    pad.addstr(padh, 0, task.date[:padw])
-    if padw-len(task.date)-1 >= len(task.status):
-        pad.addstr(padh, padw-len(task.status), task.status)
-
-    pad.refresh(0, 0, y0+1, x0+1, y1-1, x1-2)
 
     desclines = ["" for i in range(len(task.desc)//padw+1)]
     for i in range(len(desclines)):
@@ -49,10 +42,16 @@ def descPanel(h, w, x0, x1, y0, y1, panel, master, sth):
         descpad.addstr(i, 0, line)
         i += 1
 
-    descpad.refresh(0, 0, y0+2, x0+1, y1-2, x1-2)
+    descpad.refresh(0, 0, y0+1, x0+1, y1-1, x1-2)
 
+    #sth.addstr(y0, x0+1, task.name[:padw])
+    sth.addstr(y0+padh+2, x0+1, task.date[:padw])
+    if padw-len(task.date)-1 >= len(task.status):
+        sth.addstr(y0+padh+2, x0+padw+1-len(task.status), task.status)
 
-
+def taskRect(x0, x1, y0, y1, panel, master, sth):
+    rectangle(sth, y0, x0, y1-1, x1-1)
+    sth.addstr(y0, x0+1, master.tasks[panel].name[:x1-x0-2])
 
 def main(sth):
     curses.curs_set(0)
@@ -71,15 +70,14 @@ def main(sth):
         p0y, p1y, p2y = int(0*ph), int(1*ph), int(2*ph)+1
         #y0, y1 = 0, h-1
 
-        sth.clear()
-        rectangle(sth, p0y, p0x, p2y-1, p1x-1)
-        rectangle(sth, p0y, p1x, p2y-1, p2x-1)
+        sth.clear()###
+        taskRect(p0x, p1x, p0y, p2y, 0, master, sth)
+        taskRect(p1x, p2x, p0y, p2y, 1, master, sth)
 
-        rectangle(sth, p0y, p2x, p1y-1, p3x-1)
-        rectangle(sth, p1y, p2x, p2y-1, p3x-1)
-        sth.refresh()
+        taskRect(p2x, p3x, p0y, p1y, 0, master, sth)
+        taskRect(p2x, p3x, p1y, p2y, 1, master, sth)
+        sth.refresh()###
 
-        print(binds['left'])
         taskPanel(h, w, p0x, p1x, p0y, p2y-1, 0, master, sth)
         taskPanel(h, w, p1x, p2x, p0y, p2y-1, 1, master, sth)
         descPanel(h, w, p2x, p3x, p0y, p1y-1, 0, master, sth)
@@ -88,16 +86,15 @@ def main(sth):
         
         key = sth.getkey()
 
-        match key:
-            case str(binds.get('left')):
-                bob = 1
-            case str(binds.get('up')):
-                bob = 1
-            case str(binds.get('down')):
-                bob = 1
-            case str(binds.get('right')):
-                bob = 1
-            case str(binds.get('quit')):
-                bob = 1
+        if key == binds['left']:
+            master.updir()
+        elif key == binds['up']:
+            master.cursMV(-1)
+        elif key == binds['down']:
+            master.cursMV(1)
+        elif key == binds['right']:
+            master.downdir()
+        elif key == binds['quit']:
+            break
 
 wrapper(main)
