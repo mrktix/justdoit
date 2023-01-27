@@ -8,24 +8,27 @@ class jdi_parser:
         s.parser = Path(__file__).parent / 'wikiparser.sh'
 
     def parse(s, path):
-        name = str(subprocess.run([s.parser, 'name', path], capture_output=True).stdout, 'utf-8').split('\n')[:-1]
-        date = str(subprocess.run([s.parser, 'date', path], capture_output=True).stdout, 'utf-8').split('\n')[:-1]
-        desc = str(subprocess.run([s.parser, 'desc', path], capture_output=True).stdout, 'utf-8').split('\n')[:-1]
-        status = str(subprocess.run([s.parser, 'status', path], capture_output=True).stdout, 'utf-8').split('\n')[:-1]
+        name = str(subprocess.run([s.parser, 'name', path], capture_output=True).stdout, 'utf-8').split('\n')[0]
+        date = str(subprocess.run([s.parser, 'date', path], capture_output=True).stdout, 'utf-8').split('\n')[0]
+        desc = str(subprocess.run([s.parser, 'desc', path], capture_output=True).stdout, 'utf-8').split('\n')[0]
+        status = str(subprocess.run([s.parser, 'status', path], capture_output=True).stdout, 'utf-8').split('\n')[0]
+        #color = str(subprocess.run([s.parser, 'color', path], capture_output=True).stdout, 'utf-8').split('\n')[0]
 
-        numtasks = max(len(name), len(date), len(desc), len(status))
-        name += ["" for i in range(numtasks-len(name))]
-        date += ["" for i in range(numtasks-len(date))]
-        desc += ["" for i in range(numtasks-len(desc))]
-        status += ["" for i in range(numtasks-len(status))]
+        return jdi_task(name, date, desc, status, path)
 
-        tasks = [jdi_task("","","","","") for i in range(numtasks)]
-
-        for i in range(numtasks):
-            tasks[i].name = name[i]
-            tasks[i].date = date[i]
-            tasks[i].desc = desc[i]
-            tasks[i].status = status[i]
-            tasks[i].file = path
-
-        return tasks
+        #numtasks = max(len(name), len(date), len(desc), len(status))
+        #name += ["" for i in range(numtasks-len(name))]
+        #date += ["" for i in range(numtasks-len(date))]
+        #desc += ["" for i in range(numtasks-len(desc))]
+        #status += ["" for i in range(numtasks-len(status))]
+#
+        #tasks = [jdi_task("","","","","") for i in range(numtasks)]
+#
+        #for i in range(numtasks):
+            #tasks[i].name = name[i]
+            #tasks[i].date = date[i]
+            #tasks[i].desc = desc[i]
+            #tasks[i].status = status[i]
+            #tasks[i].file = path
+#
+        #return tasks

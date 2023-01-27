@@ -11,6 +11,8 @@ class jdi_config:
         config = str(subprocess.run(['cat', s.configfile], capture_output=True).stdout, 'utf-8').split('\n')[:-1]
         for line in config:
             args = line.split(' ')
+            if len(args) < 2:
+                continue
             s.binds[args[0]] = args[1]
         return s.binds
 

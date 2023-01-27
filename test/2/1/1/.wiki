@@ -1,1 +1,4 @@
-//jdi-name//==bobby has a few legs
+//jdi-name//==hello
+//jdi-desc//==sthnostnhistnhstonhstnohint
+//jdi-date//==
+//jdi-status//==active

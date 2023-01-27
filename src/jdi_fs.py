@@ -21,7 +21,7 @@ class jdi_fs:
             if os.path.isfile(taskdir):
                 continue
             wiki = taskdir / '.wiki'
-            tasks += s.taskfromwiki(str(wiki))
+            tasks += [s.taskfromwiki(str(wiki))]
         return tasks
 
     def indexOfParent(s, cotasks, subtasks):

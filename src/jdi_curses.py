@@ -60,6 +60,9 @@ def main(sth):
     master = jdi_master()
     fig = jdi_config()
     binds = fig.load()
+    mode = 'normal'
+    mode2 = ''
+    buffer = ''
 
     while True:
         h, w = sth.getmaxyx()
@@ -67,7 +70,7 @@ def main(sth):
         p0x, p1x, p2x, p3x = int(0*pw)+1, int(1*pw)+1, int(2*pw)+1, int(3*pw)+1
 
         ph = (h-1)/(2)
-        p0y, p1y, p2y = int(0*ph), int(1*ph), int(2*ph)+1
+        p0y, p1y, p2y = int(0*ph), int(1*ph), int(2*ph)
         #y0, y1 = 0, h-1
 
         sth.clear()###
@@ -83,18 +86,73 @@ def main(sth):
         descPanel(h, w, p2x, p3x, p0y, p1y-1, 0, master, sth)
         descPanel(h, w, p2x, p3x, p1y, p2y-1, 1, master, sth)
 
+        if mode2 == '':
+            modestr='['+mode+']'
+        else:
+            modestr='['+mode+' '+mode2+']'
+
+        sth.addstr(h-1, 1, modestr[:w-2])
+        spaceforbuffer = w-2-len(modestr)-1
+        sth.addstr(h-1, len(modestr)+2, buffer[-spaceforbuffer:])
         
         key = sth.getkey()
 
-        if key == binds['left']:
-            master.updir()
-        elif key == binds['up']:
-            master.cursMV(-1)
-        elif key == binds['down']:
-            master.cursMV(1)
-        elif key == binds['right']:
-            master.downdir()
-        elif key == binds['quit']:
-            break
+        skip = True
+        match key:
+            case 'KEY_BACKSPACE':
+                buffer = buffer[:-1]
+            case '\t':
+                mode = 'normal'
+                mode2 = ''
+                buffer = ''
+            case _:
+                if key.find('KEY') == -1:
+                    if key != '\n':
+                        buffer += key
+                    skip = False
+
+        clr = not skip
+        if mode == 'normal' and not skip:
+            if buffer == binds['left']:
+                master.updir()
+            elif buffer == binds['up']:
+                master.cursMV(-1)
+            elif buffer == binds['down']:
+                master.cursMV(1)
+            elif buffer == binds['right']:
+                master.downdir()
+
+            elif buffer == binds['mvup']:
+                master.taskMV(-1)
+            elif buffer == binds['mvdn']:
+                master.taskMV(1)
+
+            elif buffer == binds['chname']:
+                mode = 'change'
+                mode2 = 'name'
+            elif buffer == binds['chdate']:
+                mode = 'change'
+                mode2 = 'date'
+            elif buffer == binds['chdesc']:
+                mode = 'change'
+                mode2 = 'desc'
+            elif buffer == binds['chstatus']:
+                mode = 'change'
+                mode2 = 'status'
+
+            elif buffer == binds['quit']:
+                break
+            else:
+                clr = False
+        elif mode == 'change' and not skip:
+            if key == '\n':
+                master.changeAttr(mode2, buffer)
+                mode = 'normal'
+                mode2 = ''
+            else:
+                clr = False
+
+        if clr:
+            buffer = ''
 
 wrapper(main)
