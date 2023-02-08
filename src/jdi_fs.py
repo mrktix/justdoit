@@ -12,16 +12,27 @@ class jdi_fs:
     def taskfromwiki(s, wiki):
         return s.parser.parse(wiki)
 
-    def subtasks(s, path):
-        return s.sorttasks(s.tasksindir(path))
+    def subtasks(s, path, depth):
+        return s.sorttasks(s.tasksindir(path, depth))
 
-    def tasksindir(s, directory):
+    def tasksindir(s, directory, depth):
+        #create list of paths to tasks in this directory
+        dirs = [directory]
+
+        for i in range(depth):
+            newdirs = []
+            for dir in dirs:
+                for entry in directory.iterdir():
+                    if os.path.isfile(entry):
+                        continue
+                    newdirs += [entry]
+            dirs = newdirs
+
+        
         tasks = []
-        for taskdir in directory.iterdir():
-            if os.path.isfile(taskdir):
-                continue
-            wiki = taskdir / '.wiki'
-            tasks += [s.taskfromwiki(str(wiki))]
+        for dir in dirs:
+            tasks += [s.taskfromwiki(str(dir / '.wiki'))]
+
         return tasks
 
     def indexOfParent(s, cotasks, subtasks):
@@ -34,9 +45,12 @@ class jdi_fs:
     def sorttasks(s, tasks):
         dated = []
         undated = []
+        done = []
 
         for task in tasks:
-            if task.date.find("/") == -1:
+            if task.status == 'done':
+                done += [task]
+            elif task.date.find("/") == -1:
                 undated += [task]
             else:
                 dated += [task]
@@ -60,7 +74,7 @@ class jdi_fs:
                     break
 
                 # this task it later, continue loop
-        return datedsort+undated
+        return datedsort+undated+done
 
     def firstearly(s, date1, date2):
         sdate1 = date1.split('/')

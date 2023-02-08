@@ -1,5 +1,6 @@
 from pathlib import Path
 import subprocess
+import os
 
 from jdi_task import jdi_task
 from jdi_fs import jdi_fs
@@ -30,9 +31,18 @@ class jdi_master:
     def load(s):
         s.paneldata = [[jdi_task("","","","","") for i in range(0)] for k in range(s.NUM_PANELS)]
 
-        s.paneldata[0] = s.fs.subtasks(s.dir)
-        s.paneldata[1] = s.fs.subtasks(Path(s.paneldata[0][s.cursor].file).parent)
+        if s.mode == s.MODE_STANDARD:
+            s.paneldata[0] = s.fs.subtasks(s.dir, 1)
+        elif s.mode == s.MODE_DATED:
+            s.paneldata[0] = s.fs.subtasks(s.dir, 1)
+
+        s.paneldata[1] = s.fs.subtasks(Path(s.paneldata[0][s.cursor].file).parent, 1)
         s.tasks = [s.fs.taskfromwiki(str(s.dir/'.wiki')), s.paneldata[0][s.cursor]]
+
+    def isCursor(s, task, panel):
+        if panel == 1:
+            return False
+        return task.file == s.paneldata[panel][s.cursor].file
 
     def cursMV(s, direction):
         s.cursor += direction
@@ -50,6 +60,10 @@ class jdi_master:
         if s.paneldata[0][s.cursor].date != "":
             return
         if s.paneldata[0][s.cursor+direction].date != "":
+            return
+        if s.paneldata[0][s.cursor].status ==  'done':
+            return
+        if s.paneldata[0][s.cursor+direction].status ==  'done':
             return
         
         s.swapFile(str(Path(s.paneldata[0][s.cursor].file).parent), str(Path(s.paneldata[0][s.cursor+direction].file).parent))
@@ -72,6 +86,8 @@ class jdi_master:
                 oldval = task.desc
             case 'status':
                 oldval = task.status
+            case 'color':
+                oldval = str(task.color)
             case _:
                 return
 
@@ -80,7 +96,6 @@ class jdi_master:
 
         if str(subprocess.run(['grep', matchstring, task.file], capture_output=True).stdout, 'utf-8') == '':
             subprocess.run([str(Path(__file__).parent / 'echointo.sh'), newstring, task.file])
-            subprocess.run(['notify-send', 'hi'])
         else:
             subprocess.run(['sed', '-i', 's+'+matchstring+'+'+newstring+'+', task.file])
 
@@ -88,6 +103,23 @@ class jdi_master:
         if attr == 'date':
             s.alignCursWith(task.name)
             s.load()
+
+    def addTask(s, panel):
+        folder = Path(s.tasks[panel].file).parent / (str(subprocess.run(['date', '+%s'], capture_output=True).stdout, 'utf-8').split('\n')[0]+'/')
+
+        foldername = str(folder)
+        wikiname = str(folder / '.wiki')
+        defaultwikiname = os.path.expandvars('$XDG_CONFIG_HOME/jdi/default.wiki')
+
+        subprocess.run(['mkdir', foldername])
+        subprocess.run(['cp', defaultwikiname, wikiname])
+        s.load()
+
+    def deleteTask(s):
+        folder = str(Path(s.paneldata[0][s.cursor].file).parent)
+        subprocess.run(['rm', '-r', folder])
+        s.cursor = 0
+        s.load()
 
     def downdir(s):
         if len(s.paneldata[1]) == 0:
@@ -112,11 +144,3 @@ class jdi_master:
             if s.paneldata[0][i].name == name:
                 s.cursor = i
                 break
-
-
-    #def getMaxLen(s, panel, category):
-        #res = 0
-        #for str in s.paneldata[][panel][category]:
-            #if len(str) > res:
-                #res = len(str)
-        #return res
