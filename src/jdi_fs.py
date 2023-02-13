@@ -1,4 +1,5 @@
 from pathlib import Path
+import subprocess
 import os
 
 from jdi_task import jdi_task
@@ -6,14 +7,28 @@ from jdi_parser import jdi_parser
 
 class jdi_fs:
 
-    def __init__(s, path):
+    def __init__(s):
         s.parser = jdi_parser()
+        s.showDoneTasks = True
+
+    def toggleShowDoneTasks(s):
+        s.showDoneTasks = not s.showDoneTasks
     
     def taskfromwiki(s, wiki):
         return s.parser.parse(wiki)
 
     def subtasks(s, path, depth):
         return s.sorttasks(s.tasksindir(path, depth))
+
+    def tasksFromFile(s, filestr):
+        #stuff
+        taskfolders = str(subprocess.run(['cat', filestr], capture_output=True).stdout, 'utf-8').split('\n')[:-1]
+        
+        tasks=[]
+        for folder in taskfolders:
+            tasks += [s.taskfromwiki(str(Path(folder) / '.wiki'))]
+
+        return tasks
 
     def tasksindir(s, directory, depth):
         #create list of paths to tasks in this directory
@@ -22,10 +37,9 @@ class jdi_fs:
         for i in range(depth):
             newdirs = []
             for dir in dirs:
-                for entry in directory.iterdir():
-                    if os.path.isfile(entry):
-                        continue
-                    newdirs += [entry]
+                for entry in dir.iterdir():
+                    if not os.path.isfile(entry):
+                        newdirs += [entry]
             dirs = newdirs
 
         
@@ -49,7 +63,8 @@ class jdi_fs:
 
         for task in tasks:
             if task.status == 'done':
-                done += [task]
+                if s.showDoneTasks:
+                    done += [task]
             elif task.date.find("/") == -1:
                 undated += [task]
             else:

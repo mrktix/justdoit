@@ -1,4 +1,4 @@
-//jdi-name//==lel
+//jdi-name//==task
 //jdi-status//==active
 //jdi-desc//==default task description
-//jdi-date//==
+//jdi-color//==2

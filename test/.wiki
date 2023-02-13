@@ -1,2 +1,1 @@
 //jdi-name//==base
-//jdi-desc//==jdi base task directory

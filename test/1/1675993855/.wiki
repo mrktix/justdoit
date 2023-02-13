@@ -1,5 +1,3 @@
-//jdi-name//==tosk
+//jdi-name//==bro i dont original
 //jdi-status//==active
 //jdi-desc//==default task description
-//jdi-color//==6
-//jdi-date//==01/01/2023

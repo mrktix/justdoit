@@ -14,11 +14,17 @@ def initCols():
     for i in range(len(termcolors)):
         curses.init_pair(i+1, termcolors[i], -1)
 
+    r, g, b = 146,131,116
+    R, G, B = int(r/255*999),int(g/255*999),int(b/255*999),
+    curses.init_color(curses.COLOR_WHITE, R,G,B)
+    curses.init_pair(len(termcolors)+1, curses.COLOR_WHITE, -1)
+
 def taskColor(task, panel, master, highlightCurs):
     color = curses.color_pair(task.color+1)
 
     if task.status ==  'done':
-        color = curses.color_pair(1) | curses.A_BOLD
+        color = curses.color_pair(9)
+
     if highlightCurs and master.isCursor(task, panel):
         color = color | curses.A_REVERSE | curses.A_BOLD
 
@@ -88,6 +94,8 @@ def dateString(date):
 def dateAutoFill(date):
     if date == 'today':
         return str(subprocess.run(['date', '+%d/%m/%Y'], capture_output=True).stdout, 'utf-8').split('\n')[0]
+    if date == '':
+        return ''
 
     datesplit = date.split('/')
     newdate = ''
@@ -98,22 +106,39 @@ def dateAutoFill(date):
             newdate += num + '/'
     newdate = newdate[:-1]
 
+    #now date is what was entered but padded w zeros
     numslash = newdate.count('/')
+    finaldate = ''
     if numslash ==  0:
         #assume input is the day
-        return newdate + str(subprocess.run(['date', '+/%m/%Y'], capture_output=True).stdout, 'utf-8').split('\n')[0]
+        finaldate = newdate + str(subprocess.run(['date', '+/%m/%Y'], capture_output=True).stdout, 'utf-8').split('\n')[0]
     elif numslash ==  1:
         #assume input is the day and month
-        return newdate + str(subprocess.run(['date', '+/%Y'], capture_output=True).stdout, 'utf-8').split('\n')[0]
+        finaldate = newdate + str(subprocess.run(['date', '+/%Y'], capture_output=True).stdout, 'utf-8').split('\n')[0]
+    elif numslash == 2:
+        if len(newdate) ==  8:
+            finaldate = newdate[:-2] + str(subprocess.run(['date', '+%C'], capture_output=True).stdout, 'utf-8').split('\n')[0] + newdate[-2:]
+        finaldate = newdate
+
+    if finaldate.count('/') != 2:
+        return ''
+
+    for num in finaldate.split('/'):
+        i = int(num)
+
+    return finaldate
 
 def main(sth):
+    if not curses.can_change_color():
+        raise Exception('cannot change color')
+
     curses.curs_set(0)
     curses.use_default_colors()
     initCols()
 
     master = jdi_master()
     fig = jdi_config()
-    binds = fig.load()
+    config = fig.load()
     mode = 'normal'
     mode2 = ''
     buffer = ''
@@ -139,7 +164,7 @@ def main(sth):
         p1yr = h-4-rightDescHeight
         p2y = h-1
 
-        sth.clear()###
+        sth.erase()###
         infoRect(p0x, p1x, p0y, p2y, 0, master, sth, True)
         infoRect(p1x, p2x, p0y, p2y, 1, master, sth, True)
         sth.refresh()###
@@ -162,13 +187,14 @@ def main(sth):
             modestr='['+mode+']'
         else:
             modestr='['+mode+' '+mode2+']'
+        mastermode = '['+master.getMode()+']'
 
         sth.attron(modecolor)
+        sth.addstr(h-1, 1, modestr[:(w-2)//2])
+        sth.addstr(h-1, w-1-len(mastermode), mastermode[:(w-2)//2])
 
-        sth.addstr(h-1, 1, modestr[:w-2])
-        spaceforbuffer = w-2-len(modestr)-1
+        spaceforbuffer = w-2-len(modestr)-1-len(mastermode)-1
         sth.addstr(h-1, len(modestr)+2, buffer[-spaceforbuffer:])
-
         sth.attroff(modecolor)
         
         key = sth.getkey()
@@ -189,58 +215,70 @@ def main(sth):
 
         clr = not skip
         if mode == 'normal' and not skip:
-            if buffer == binds['left']:
+            if buffer == config['left']:
                 master.updir()
                 scroll = 0
-            elif buffer == binds['up']:
+            elif buffer == config['up']:
                 master.cursMV(-1)
-            elif buffer == binds['down']:
+            elif buffer == config['down']:
                 master.cursMV(1)
-            elif buffer == binds['right']:
+            elif buffer == config['right']:
                 master.downdir()
                 scroll = 0
 
-            elif buffer == binds['mvup']:
+            elif buffer == config['mvup']:
                 master.taskMV(-1)
-            elif buffer == binds['mvdn']:
+            elif buffer == config['mvdn']:
                 master.taskMV(1)
 
-            elif buffer == binds['scrlup']:
+            elif buffer == config['scrlup']:
                 if scroll > 0:
                     master.cursMV(-1)
                     scroll -= 1
-            elif buffer == binds['scrldn']:
+            elif buffer == config['scrldn']:
                 if len(master.paneldata[0]) - scroll > p1yl - p0y - 2:
                     master.cursMV(1)
                     scroll += 1
 
-            elif buffer == binds['chname']:
+            elif buffer == config['chname']:
                 mode = 'change'
                 mode2 = 'name'
-            elif buffer == binds['chdate']:
+            elif buffer == config['chdate']:
                 mode = 'change'
                 mode2 = 'date'
-            elif buffer == binds['chdesc']:
+            elif buffer == config['chdesc']:
                 mode = 'change'
                 mode2 = 'desc'
 
-            elif buffer == binds['setstatus']:
+            elif buffer == config['setstatus']:
                 mode = 'set'
                 mode2 = 'status'
-            elif buffer == binds['setcolor']:
+            elif buffer == config['setcolor']:
                 mode = 'set'
                 mode2 = 'color'
 
-            elif buffer == binds['addtask']:
+            elif buffer == config['addtask']:
                 master.addTask(0)
-            elif buffer == binds['addsubtask']:
+            elif buffer == config['addsubtask']:
                 master.addTask(1)
 
-            elif buffer == binds['deletetask']:
+            elif buffer == config['deletetask']:
                 mode = 'delete'
                 mode2 = 'task?'
 
-            elif buffer == binds['quit']:
+            elif buffer == config['modestandard']:
+                master.setMode('standard')
+            elif buffer == config['modeoverview']:
+                master.setMode('overview')
+            elif buffer == config['modetodo']:
+                master.setMode('todo')
+
+            elif buffer == config['toggledone']:
+                master.toggleDoneTasks()
+            elif buffer == config['toggletodo']:
+                master.toggleTodo()
+
+            elif buffer == config['quit']:
                 break
             else:
                 clr = False
@@ -257,7 +295,7 @@ def main(sth):
 
         elif mode == 'delete' and mode2 == 'task?' and not skip:
             if key == '\n':
-                if buffer == 'YES':
+                if buffer == config['confirmstr']:
                     master.deleteTask()
                 mode = 'normal'
                 mode2 = ''
@@ -265,14 +303,12 @@ def main(sth):
                 clr = False
 
         elif mode == 'set' and not skip:
-            if mode2 == 'color' and 48 <= ord(buffer) and ord(buffer) <= 55:
+            if mode2 == 'color' and len(buffer) == 1 and 48 <= ord(buffer) and ord(buffer) <= 55:
                 master.changeAttr(mode2, buffer)
             elif mode2 == 'status':
                 if buffer == 'd':
                     master.changeAttr(mode2, 'done')
                 elif buffer == 'a':
-                    master.changeAttr(mode2, 'archived')
-                elif buffer == 'A':
                     master.changeAttr(mode2, 'active')
 
             mode = 'normal'

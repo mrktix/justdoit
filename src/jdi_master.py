@@ -8,41 +8,100 @@ from jdi_fs import jdi_fs
 class jdi_master:
 
     MODE_STANDARD = 0
-    MODE_DATED = 1
+    MODE_OVERVIEW = 1
     MODE_TODO = 2
-    NUM_MODE = 3
     
     BASEDIR = Path('/home/arleok/repos/justdoit/test/')
 
     NUM_PANELS = 2
 
-    ### PUBLIC METHODS ###
     def __init__(s):
-        s.fs = jdi_fs(Path('/home/arleok/repos/justdoit/test/2/'))
-        s.dir = s.BASEDIR / '2/'
+        s.fs = jdi_fs()
+        s.dir = s.BASEDIR
+        s.todofile = s.BASEDIR / '.todolist'
+
+        s.newTaskCounter = 0
 
         s.mode = s.MODE_STANDARD
-        s.showArchived = False
 
         s.cursor = 0
+        s.overviewDepth = 1
 
         s.load()
 
     def load(s):
-        s.paneldata = [[jdi_task("","","","","") for i in range(0)] for k in range(s.NUM_PANELS)]
+        s.paneldata = [[jdi_task("","","","","","") for i in range(0)] for k in range(s.NUM_PANELS)]
+        s.tasks = [jdi_task("","","","","","") for i in range(2)]
+
+        s.tasks[0] = s.fs.taskfromwiki(str(s.dir/'.wiki'))
 
         if s.mode == s.MODE_STANDARD:
             s.paneldata[0] = s.fs.subtasks(s.dir, 1)
-        elif s.mode == s.MODE_DATED:
-            s.paneldata[0] = s.fs.subtasks(s.dir, 1)
+            s.paneldata[1] = s.fs.subtasks(Path(s.paneldata[0][s.cursor].file).parent, 1)
+            s.tasks[1] = s.paneldata[0][s.cursor]
 
-        s.paneldata[1] = s.fs.subtasks(Path(s.paneldata[0][s.cursor].file).parent, 1)
-        s.tasks = [s.fs.taskfromwiki(str(s.dir/'.wiki')), s.paneldata[0][s.cursor]]
+        elif s.mode == s.MODE_OVERVIEW:
+            s.paneldata[0] = s.fs.subtasks(s.dir, s.overviewDepth)
+            s.paneldata[1] = s.fs.subtasks(s.dir, s.overviewDepth+1)
+            s.tasks[1] = s.tasks[0]
+
+        elif s.mode == s.MODE_TODO:
+            s.paneldata[0] = s.fs.tasksFromFile(str(s.BASEDIR / '.todolist'))
+            if len(s.paneldata[0]) != 0:
+                s.paneldata[1] = s.fs.subtasks(Path(s.paneldata[0][s.cursor].file).parent, 1)
+                s.tasks[1] = s.paneldata[0][s.cursor]
+            else:
+                s.paneldata[1] = []
+                s.tasks[1] = s.tasks[0]
 
     def isCursor(s, task, panel):
         if panel == 1:
             return False
         return task.file == s.paneldata[panel][s.cursor].file
+
+    def toggleDoneTasks(s):
+        s.fs.toggleShowDoneTasks()
+        if s.paneldata[0][s.cursor].status == 'done':
+            s.mvCursAfterDelTask()
+        s.load()
+
+    def isInTodo(s, task):
+        return str(subprocess.run(['grep', str(Path(task.file).parent), str(s.todofile)], capture_output=True).stdout, 'utf-8') != ''
+
+    def rmFromTodo(s, task):
+        subprocess.run(['sed', '-i', 's|'+str(Path(task.file).parent)+'|DELETE|;/DELETE/d', s.todofile])
+
+    def putInTodo(s, task):
+        subprocess.run([str(Path(__file__).parent / 'echointo.sh'), str(Path(task.file).parent), s.todofile])
+
+    def toggleTodo(s):
+        if len(s.paneldata[0]) == 0:
+            return
+        task = s.paneldata[0][s.cursor]
+        if s.isInTodo(task):
+            s.rmFromTodo(task)
+        else:
+            s.putInTodo(task)
+        s.load()
+
+    def setMode(s, modestr):
+        if modestr == 'standard':
+            s.mode = s.MODE_STANDARD
+        if modestr == 'overview':
+            s.mode = s.MODE_OVERVIEW
+        if modestr == 'todo':
+            s.mode = s.MODE_TODO
+
+        s.load()
+
+    def getMode(s):
+        if s.mode == s.MODE_STANDARD:
+            return 'standard'
+        if s.mode == s.MODE_OVERVIEW:
+            return 'overview'
+        if s.mode == s.MODE_TODO:
+            return 'todo'
+            
 
     def cursMV(s, direction):
         s.cursor += direction
@@ -53,6 +112,8 @@ class jdi_master:
         s.load()
 
     def taskMV(s, direction):
+        if not s.mode == s.MODE_STANDARD:
+            return
         if direction == -1 and s.cursor == 0:
             return
         if direction == 1 and s.cursor == len(s.paneldata[0])-1:
@@ -105,7 +166,12 @@ class jdi_master:
             s.load()
 
     def addTask(s, panel):
-        folder = Path(s.tasks[panel].file).parent / (str(subprocess.run(['date', '+%s'], capture_output=True).stdout, 'utf-8').split('\n')[0]+'/')
+        if not s.mode == s.MODE_STANDARD:
+            return
+        folder = Path(s.tasks[panel].file).parent / (str(subprocess.run(['date', '+%s'], capture_output=True).stdout, 'utf-8').split('\n')[0]+str(s.newTaskCounter)+'/')
+
+        s.newTaskCounter = (s.newTaskCounter + 1)%100
+
 
         foldername = str(folder)
         wikiname = str(folder / '.wiki')
@@ -115,13 +181,30 @@ class jdi_master:
         subprocess.run(['cp', defaultwikiname, wikiname])
         s.load()
 
+    def mvCursAfterDelTask(s):
+        if len(s.paneldata[0]) == 1:
+            s.updir()
+        else:
+            if s.cursor == len(s.paneldata[0])-1:
+                s.cursor -= 1
+
+
     def deleteTask(s):
         folder = str(Path(s.paneldata[0][s.cursor].file).parent)
+
+        s.mvCursAfterDelTask()
+
         subprocess.run(['rm', '-r', folder])
-        s.cursor = 0
         s.load()
 
     def downdir(s):
+        if s.mode == s.MODE_OVERVIEW:
+            if len(s.paneldata[0]) == 0:
+                return
+            s.overviewDepth += 1
+            s.cursor = 0
+            s.load()
+            return
         if len(s.paneldata[1]) == 0:
             return
         s.dir = Path(s.paneldata[0][s.cursor].file).parent
@@ -129,6 +212,13 @@ class jdi_master:
         s.load()
 
     def updir(s):
+        if s.mode == s.MODE_OVERVIEW:
+            if s.overviewDepth == 1:
+                return
+            s.overviewDepth -= 1
+            s.cursor = 0
+            s.load()
+            return
         if s.dir == s.BASEDIR:
             return
         s.dir = s.dir.parent
