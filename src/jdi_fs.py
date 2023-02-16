@@ -26,7 +26,12 @@ class jdi_fs:
         
         tasks=[]
         for folder in taskfolders:
-            tasks += [s.taskfromwiki(str(Path(folder) / '.wiki'))]
+            task = s.taskfromwiki(str(Path(folder) / '.wiki'))
+            if task.status ==  'done':
+                if s.showDoneTasks:
+                    tasks += [task]
+            else:
+                tasks += [task]
 
         return tasks
 

@@ -59,6 +59,12 @@ class jdi_master:
             return False
         return task.file == s.paneldata[panel][s.cursor].file
 
+    def homeDir(s):
+        s.dir = s.BASEDIR
+        s.mode = s.MODE_STANDARD
+        s.cursor = 0
+        s.load()
+
     def toggleDoneTasks(s):
         s.fs.toggleShowDoneTasks()
         if s.paneldata[0][s.cursor].status == 'done':
@@ -81,17 +87,22 @@ class jdi_master:
         if s.isInTodo(task):
             s.rmFromTodo(task)
         else:
+            if task.status == 'done':
+                return
             s.putInTodo(task)
+        if s.mode ==  s.MODE_TODO:
+            s.mvCursAfterDelTask()
         s.load()
 
     def setMode(s, modestr):
         if modestr == 'standard':
             s.mode = s.MODE_STANDARD
-        if modestr == 'overview':
+        elif modestr == 'overview':
             s.mode = s.MODE_OVERVIEW
-        if modestr == 'todo':
+        elif modestr == 'todo':
             s.mode = s.MODE_TODO
 
+        s.cursor = 0
         s.load()
 
     def getMode(s):
@@ -101,7 +112,6 @@ class jdi_master:
             return 'overview'
         if s.mode == s.MODE_TODO:
             return 'todo'
-            
 
     def cursMV(s, direction):
         s.cursor += direction
@@ -112,6 +122,9 @@ class jdi_master:
         s.load()
 
     def taskMV(s, direction):
+        if s.mode == s.MODE_TODO:
+            s.taskMVTD(direction)
+            return
         if not s.mode == s.MODE_STANDARD:
             return
         if direction == -1 and s.cursor == 0:
@@ -131,6 +144,22 @@ class jdi_master:
         s.cursor += direction
         s.load()
 
+    def taskMVTD(s, direction):
+        if s.mode != s.MODE_TODO:
+            return
+        if s.cursor + direction < 0:
+            return
+        if s.cursor + direction >= len(s.paneldata[0]):
+            return
+        #sed -i -n '20{h;n;G};p' infile (swaps line 20 with the one below)
+        if direction == -1:
+            targline = s.cursor+direction+1
+        else:
+            targline = s.cursor+1
+        subprocess.run(['sed', '-i', '-n', str(targline)+'{h;n;G};p', str(s.todofile)])
+        s.cursor += direction
+        s.load()
+
     def swapFile(s, this, that):
         subprocess.run(['mv', this, this+'TEMP'], capture_output=True) 
         subprocess.run(['mv', that, this], capture_output=True) 
@@ -146,6 +175,8 @@ class jdi_master:
             case 'desc':
                 oldval = task.desc
             case 'status':
+                if newval == 'done' and s.isInTodo(task):
+                    s.rmFromTodo(task)
                 oldval = task.status
             case 'color':
                 oldval = str(task.color)
@@ -181,13 +212,16 @@ class jdi_master:
         subprocess.run(['cp', defaultwikiname, wikiname])
         s.load()
 
+    def goTo(s, factor):
+        s.cursor = int(factor * (len(s.paneldata[0]) - 1))
+        s.load()
+
     def mvCursAfterDelTask(s):
         if len(s.paneldata[0]) == 1:
             s.updir()
         else:
             if s.cursor == len(s.paneldata[0])-1:
                 s.cursor -= 1
-
 
     def deleteTask(s):
         folder = str(Path(s.paneldata[0][s.cursor].file).parent)
@@ -209,9 +243,14 @@ class jdi_master:
             return
         s.dir = Path(s.paneldata[0][s.cursor].file).parent
         s.cursor = 0
-        s.load()
+        if s.mode == s.MODE_TODO:
+            s.setMode('standard')
+        else:
+            s.load()
 
     def updir(s):
+        if s.mode == s.MODE_TODO:
+            return
         if s.mode == s.MODE_OVERVIEW:
             if s.overviewDepth == 1:
                 return

@@ -1,4 +1,4 @@
-//jdi-name//==lol
+//jdi-name//==lolerino
 //jdi-status//==done
 //jdi-desc//==default task description
 //jdi-color//==5

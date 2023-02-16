@@ -38,11 +38,16 @@ def taskPanel(h, w, x0, x1, y0, y1, scroll, panel, master, sth):
     for height in range(len(master.paneldata[panel])-scroll):
         task = master.paneldata[panel][i]
         color = taskColor(task, panel, master, True)
+        
+        if task.status == 'done':
+            name = task.name + ' (done)'
+        else:
+            name = task.name
 
         pad.addstr(height, 0, " "*padw, color)
-        pad.addstr(height, 0, task.name[:padw], color)
+        pad.addstr(height, 0, name[:padw], color)
         datestr = dateString(task.date)
-        if padw-len(task.name) >= len(datestr)+1:
+        if padw-len(name) >= len(datestr)+1:
             pad.addstr(height, padw-len(datestr), datestr, color)
 
         i += 1
@@ -277,6 +282,16 @@ def main(sth):
                 master.toggleDoneTasks()
             elif buffer == config['toggletodo']:
                 master.toggleTodo()
+
+            elif buffer == config['homedir']:
+                master.homeDir()
+            
+            elif buffer == config['gotop']:
+                master.goTo(0)
+            elif buffer == config['gomid']:
+                master.goTo(0.5)
+            elif buffer == config['gobot']:
+                master.goTo(1)
 
             elif buffer == config['quit']:
                 break
