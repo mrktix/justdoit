@@ -141,9 +141,9 @@ def main(sth):
     curses.use_default_colors()
     initCols()
 
-    master = jdi_master()
     fig = jdi_config()
     config = fig.load()
+    master = jdi_master(config['base_directory'])
     mode = 'normal'
     mode2 = ''
     buffer = ''
@@ -151,10 +151,6 @@ def main(sth):
     scroll = 0
 
     while True:
-        #pw = int((w-2)*0.5)
-        #p0x, p1x, p2x = int(0*pw)+1, int(1*pw)+1, int(2*pw)+1
-        #ph = int((h-1)*0.7)
-        #p0y, p1y, p2y = 0, 0+ph, h-1
         h, w = sth.getmaxyx()
 
         p0x = 1
@@ -224,8 +220,19 @@ def main(sth):
                 master.updir()
                 scroll = 0
             elif buffer == config['up']:
+                if master.cursor < scroll + 1:
+                    if scroll > 0:
+                        scroll -= 1
+                if master.cursor ==  0:
+                    if len(master.paneldata[0]) > p1yl - p0y - 2:
+                        scroll = len(master.paneldata[0])-(p1yl-p0y-2)
                 master.cursMV(-1)
             elif buffer == config['down']:
+                if master.cursor - scroll > p1yl - p0y - 4:
+                    if len(master.paneldata[0]) - scroll > p1yl - p0y - 2:
+                        scroll += 1
+                if master.cursor == len(master.paneldata[0])-1:
+                    scroll = 0
                 master.cursMV(1)
             elif buffer == config['right']:
                 master.downdir()
@@ -235,15 +242,6 @@ def main(sth):
                 master.taskMV(-1)
             elif buffer == config['mvdn']:
                 master.taskMV(1)
-
-            elif buffer == config['scrlup']:
-                if scroll > 0:
-                    master.cursMV(-1)
-                    scroll -= 1
-            elif buffer == config['scrldn']:
-                if len(master.paneldata[0]) - scroll > p1yl - p0y - 2:
-                    master.cursMV(1)
-                    scroll += 1
 
             elif buffer == config['chname']:
                 mode = 'change'
@@ -287,11 +285,21 @@ def main(sth):
                 master.homeDir()
             
             elif buffer == config['gotop']:
+                scroll = 0
                 master.goTo(0)
-            elif buffer == config['gomid']:
-                master.goTo(0.5)
             elif buffer == config['gobot']:
+                if len(master.paneldata[0]) > p1yl - p0y - 2:
+                    scroll = len(master.paneldata[0])-(p1yl-p0y-2)
                 master.goTo(1)
+            
+            elif buffer == config['godown']:
+                scroll = min(max(0, len(master.paneldata[0])-(p1yl-p0y-2)), scroll+(p1yl-p0y-2))
+                master.cursor = min(max(len(master.paneldata[0])-1, len(master.paneldata[0])-(p1yl-p0y-2)), master.cursor+(p1yl-p0y-2))
+                master.load()
+            elif buffer == config['goup']:
+                scroll = max(0, scroll - (p1yl - p0y -2))
+                master.cursor = max(0, master.cursor - (p1yl - p0y - 2))
+                master.load()
 
             elif buffer == config['quit']:
                 break

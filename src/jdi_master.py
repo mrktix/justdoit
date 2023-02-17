@@ -11,12 +11,13 @@ class jdi_master:
     MODE_OVERVIEW = 1
     MODE_TODO = 2
     
-    BASEDIR = Path('/home/arleok/repos/justdoit/test/')
+    BASEDIR = Path('/home/arleok/')
 
     NUM_PANELS = 2
 
-    def __init__(s):
+    def __init__(s, dirstr):
         s.fs = jdi_fs()
+        s.BASEDIR = Path(dirstr)
         s.dir = s.BASEDIR
         s.todofile = s.BASEDIR / '.todolist'
 
