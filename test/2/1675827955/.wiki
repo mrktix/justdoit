@@ -1,4 +1,0 @@
-//jdi-name//==lel
-//jdi-status//==active
-//jdi-desc//==default task description
-//jdi-date//==

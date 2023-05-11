@@ -1,4 +1,0 @@
-//jdi-name//==hello
-//jdi-desc//==sthnostnhistnhstonhstnohint
-//jdi-date//==
-//jdi-status//==active

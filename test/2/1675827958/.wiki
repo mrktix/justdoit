@@ -1,5 +1,0 @@
-//jdi-name//==task
-//jdi-status//==active
-//jdi-desc//==default task description
-//jdi-color//==1
-//jdi-date//==09/03/2023

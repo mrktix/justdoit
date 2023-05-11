@@ -1,3 +1,0 @@
-//jdi-name//==bro i dont original
-//jdi-status//==done
-//jdi-desc//==default task description
