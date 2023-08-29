@@ -1,0 +1,3 @@
+//jdi-name//==follow luxmyth tutorial
+//jdi-status//==active
+//jdi-desc//==default task description

@@ -1,0 +1,5 @@
+//jdi-name//==tell aj about vacation date
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==4
+//jdi-date//==22/05/2023

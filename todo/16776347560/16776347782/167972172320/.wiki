@@ -1,0 +1,4 @@
+//jdi-name//==kochcurve: snowflake
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==5

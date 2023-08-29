@@ -1,0 +1,5 @@
+//jdi-name//==israeli palestinian conflict notes
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==3
+//jdi-date//==24/05/2023

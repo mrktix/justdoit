@@ -1,0 +1,4 @@
+//jdi-name//==find 10 sources
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==7

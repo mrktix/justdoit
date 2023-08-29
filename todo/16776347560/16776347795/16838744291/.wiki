@@ -1,0 +1,5 @@
+//jdi-name//==cold war vocab
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==3
+//jdi-date//==17/05/2023

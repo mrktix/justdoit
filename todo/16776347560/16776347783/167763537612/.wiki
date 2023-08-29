@@ -1,0 +1,5 @@
+//jdi-name//==U6 Test
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==7
+//jdi-date//==10/03/2023

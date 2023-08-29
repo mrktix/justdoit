@@ -1,0 +1,5 @@
+//jdi-name//==bornacrime ch6
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==2
+//jdi-date//==09/05/2023

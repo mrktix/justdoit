@@ -1,0 +1,5 @@
+//jdi-name//==paragraph outline
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==3
+//jdi-date//==08/05/2023

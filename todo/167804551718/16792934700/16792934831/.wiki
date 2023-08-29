@@ -1,0 +1,3 @@
+//jdi-name//==setup weylus over ethernet cable
+//jdi-status//==active
+//jdi-desc//==default task description

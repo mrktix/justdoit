@@ -1,0 +1,5 @@
+//jdi-name//==HRPP 3 Outlines
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==2
+//jdi-date//==05/04/2023

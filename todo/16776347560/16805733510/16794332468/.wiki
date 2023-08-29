@@ -1,0 +1,5 @@
+//jdi-name//==HRPP Article Brainstorm
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==2
+//jdi-date//==23/03/2023

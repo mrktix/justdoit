@@ -1,0 +1,5 @@
+//jdi-name//==ec: apartheid edpuzzle
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==3
+//jdi-date//==26/05/2023

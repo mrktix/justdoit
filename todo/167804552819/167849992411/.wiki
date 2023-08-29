@@ -1,0 +1,3 @@
+//jdi-name//==fuzzmenu
+//jdi-status//==active
+//jdi-desc//==default task description

@@ -1,0 +1,5 @@
+//jdi-name//==group info survey
+//jdi-status//==done
+//jdi-desc//==get a team for the cs final
+//jdi-color//==5
+//jdi-date//==12/04/2023

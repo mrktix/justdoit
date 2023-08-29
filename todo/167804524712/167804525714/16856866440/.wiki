@@ -1,0 +1,5 @@
+//jdi-name//==work permit expiration
+//jdi-status//==active
+//jdi-desc//==default task description
+//jdi-color//==6
+//jdi-date//==30/06/2023

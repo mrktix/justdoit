@@ -1,0 +1,5 @@
+//jdi-name//==HRPP Article Rough Draft
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==2
+//jdi-date//==13/04/2023

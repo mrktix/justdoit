@@ -1,0 +1,5 @@
+//jdi-name//==U7 J5
+//jdi-status//==done
+//jdi-desc//==finishe the waves and sound inquiry google doc
+//jdi-color//==4
+//jdi-date//==29/03/2023

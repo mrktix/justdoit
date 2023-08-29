@@ -1,0 +1,5 @@
+//jdi-name//==CFA School Uniforms
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==2
+//jdi-date//==28/03/2023

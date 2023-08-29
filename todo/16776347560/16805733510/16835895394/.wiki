@@ -1,0 +1,5 @@
+//jdi-name//==character playlist
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==2
+//jdi-date//==09/05/2023

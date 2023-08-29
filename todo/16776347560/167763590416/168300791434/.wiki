@@ -1,0 +1,5 @@
+//jdi-name//==8.1 HW
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-date//==03/05/2023
+//jdi-color//==6

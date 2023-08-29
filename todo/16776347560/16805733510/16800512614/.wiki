@@ -1,0 +1,5 @@
+//jdi-name//==first article outline
+//jdi-status//==done
+//jdi-desc//==using the outline we made in class as a group, fill it out to outline your first article (with evidence and everything etc etc etc)
+//jdi-color//==2
+//jdi-date//==30/03/2023

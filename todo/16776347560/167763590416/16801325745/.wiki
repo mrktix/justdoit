@@ -1,0 +1,5 @@
+//jdi-name//==12.3 HW
+//jdi-status//==done
+//jdi-desc//==p768 6, 8, 15-21o, 29, 33, 41-49eo, 57, 61-65o, 79-85o
+//jdi-color//==6
+//jdi-date//==31/03/2023

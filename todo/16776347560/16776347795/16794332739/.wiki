@@ -1,0 +1,5 @@
+//jdi-name//==parent rated-R approval
+//jdi-status//==done
+//jdi-desc//==get parent to sign the approval to let you watch the movie in history
+//jdi-date//==23/03/2023
+//jdi-color//==3

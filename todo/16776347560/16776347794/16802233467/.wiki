@@ -1,0 +1,5 @@
+//jdi-name//==feria: rubrica de mi
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==1
+//jdi-date//==31/03/2023

@@ -1,0 +1,5 @@
+//jdi-name//==U7 IP2
+//jdi-status//==done
+//jdi-desc//==R ch16; CQ 6,7; PE TXT 46,47,53,56
+//jdi-date//==20/03/2023
+//jdi-color//==4

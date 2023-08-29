@@ -1,0 +1,4 @@
+//jdi-name//==Blue Review
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==7

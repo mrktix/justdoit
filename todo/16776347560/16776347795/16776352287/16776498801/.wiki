@@ -1,0 +1,3 @@
+//jdi-name//==create speaker notes
+//jdi-status//==done
+//jdi-desc//==default task description

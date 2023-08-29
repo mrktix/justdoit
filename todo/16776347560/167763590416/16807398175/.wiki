@@ -1,0 +1,5 @@
+//jdi-name//==12.6 HW
+//jdi-status//==done
+//jdi-desc//==p791 7-39ao, 41, 55-61o, 75, 77
+//jdi-date//==07/04/2023
+//jdi-color//==6

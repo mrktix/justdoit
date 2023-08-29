@@ -1,0 +1,4 @@
+//jdi-name//==SAT
+//jdi-status//==done
+//jdi-desc//==college board sat test. Location: Armijo HighSchool, 824 Washington St. Fairfield CA 94533
+//jdi-date//==03/06/2023

@@ -1,0 +1,3 @@
+//jdi-name//==medusa enemy (shoots lots of small ultra attractive enemies)
+//jdi-status//==done
+//jdi-desc//==default task description

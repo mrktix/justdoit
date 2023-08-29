@@ -1,0 +1,5 @@
+//jdi-name//==capstone: readme draft
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==5
+//jdi-date//==28/04/2023

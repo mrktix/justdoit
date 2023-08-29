@@ -1,0 +1,5 @@
+//jdi-name//==Airborne Interview 5:05-5:35
+//jdi-status//==done
+//jdi-desc//==set up zoom lol
+//jdi-color//==4
+//jdi-date//==13/04/2023

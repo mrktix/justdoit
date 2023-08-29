@@ -1,0 +1,5 @@
+//jdi-name//==8.2 HW
+//jdi-status//==done
+//jdi-desc//==p540 1-51o; 57; 59; 86
+//jdi-color//==6
+//jdi-date//==05/05/2023

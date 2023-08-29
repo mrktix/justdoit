@@ -1,0 +1,5 @@
+//jdi-name//==practica imperfecto subjuntivo
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==1
+//jdi-date//==11/04/2023

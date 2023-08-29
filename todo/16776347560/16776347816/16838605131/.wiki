@@ -1,0 +1,5 @@
+//jdi-name//==L32 HW
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==6
+//jdi-date//==12/05/2023

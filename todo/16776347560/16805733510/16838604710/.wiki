@@ -1,0 +1,5 @@
+//jdi-name//==socratic seminar practise
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-date//==16/05/2023
+//jdi-color//==2

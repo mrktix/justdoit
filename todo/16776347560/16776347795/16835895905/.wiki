@@ -1,0 +1,5 @@
+//jdi-name//==ww2 atrocity paragraph
+//jdi-status//==done
+//jdi-desc//==default task description
+//jdi-color//==3
+//jdi-date//==09/05/2023

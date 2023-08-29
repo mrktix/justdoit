@@ -1,0 +1,5 @@
+//jdi-name//==ask a mentor
+//jdi-status//==done
+//jdi-desc//==what advice would you give to a young person still figuring themselves and their life out?
+//jdi-color//==2
+//jdi-date//==11/05/2023
